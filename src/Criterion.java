@@ -55,7 +55,7 @@ public class Criterion {
     }
 
     public boolean hasSubcriteria(){
-        return !alternativesList.isEmpty();
+        return !subCriteriaList.isEmpty();
     }
 
     public String getName() {

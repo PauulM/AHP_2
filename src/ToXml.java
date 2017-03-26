@@ -15,7 +15,7 @@ import java.util.ArrayList;
  */
 public class ToXml {
 
-    private ArrayList<Alternative> alternativesList = new ArrayList<>();
+    //private ArrayList<Alternative> alternativesList = new ArrayList<>();
     private ArrayList<Criterion> criteriaList = new ArrayList<>();
     private Document document;
 
@@ -30,9 +30,9 @@ public class ToXml {
         }
     }
 
-    public void setAlternativesList(ArrayList<Alternative> alternativesList) {
-        this.alternativesList = alternativesList;
-    }
+//    public void setAlternativesList(ArrayList<Alternative> alternativesList) {
+//        this.alternativesList = alternativesList;
+//    }
 
     public void setCriteriaList(ArrayList<Criterion> criteriaList) {
         this.criteriaList = criteriaList;
@@ -75,14 +75,16 @@ public class ToXml {
                 criterion.appendChild(weight);
             }
             parentElement.appendChild(criterion);
-            if(c.hasSubcriteria())
-                handleSiblingsCriteria(c.getSubCriteriaList(),criterion);
+            if(c.hasSubcriteria()) {
+                handleSiblingsCriteria(c.getSubCriteriaList(), criterion);
+            }
             else{
-                for(Alternative a : alternativesList){
+                for(Alternative a : c.getAlternativesList()){
                     Element alt = document.createElement("alternative");
                     Element altName = document.createElement("name");
+                    altName.appendChild(document.createTextNode(a.getName()));
                     alt.appendChild(altName);
-                    for(Alternative a1 : alternativesList){
+                    for(Alternative a1 : c.getAlternativesList()){
                         if(a.getName().equals(a1.getName()))
                             continue;
                         Element priority = document.createElement("priority");

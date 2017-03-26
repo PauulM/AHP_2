@@ -9,11 +9,14 @@ public class ToXmlTest {
 
     private final String pathname = "C:\\Users\\pawma\\Informatyka\\Badania\\Projekt 2\\test.xml";
 
-//    @Test
-//    public void createRootElementAndWriteToXml(){
-//        ToXml toXml = new ToXml();
-//        toXml.createElement("goal");
-//        toXml.writeToXml(this.pathname);
-//    }
+    @Test
+    public void createXmlTest(){
+        XmlData xmlData = new XmlData("example.xml");
+        xmlData.initializeCriteriaList();
+        ToXml toXml = new ToXml();
+        toXml.setCriteriaList(xmlData.getCriteria());
+        toXml.createXml();
+        toXml.writeToXml(pathname);
+    }
 
 }
