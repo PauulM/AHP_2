@@ -1,6 +1,8 @@
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -38,10 +40,13 @@ public class ToXml {
         this.criteriaList = criteriaList;
     }
 
-    public void writeToXml(String pathname){
+    private void writeToXml(String pathname){
         try {
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            //transformerFactory.setAttribute("indent-number", new Integer(2));
             Transformer transformer = transformerFactory.newTransformer();
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
             DOMSource source = new DOMSource(document);
             StreamResult result = new StreamResult(new File(pathname));
             transformer.transform(source, result);
@@ -51,10 +56,11 @@ public class ToXml {
         }
     }
 
-    public void createXml(){
+    public void createXml(String pathname){
         Element rootElement = document.createElement("goal");
         document.appendChild(rootElement);
         handleSiblingsCriteria(findRootCriteria(criteriaList), rootElement);
+        writeToXml(pathname);
 
     }
 

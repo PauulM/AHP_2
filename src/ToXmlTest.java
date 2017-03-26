@@ -15,8 +15,7 @@ public class ToXmlTest {
         xmlData.initializeCriteriaList();
         ToXml toXml = new ToXml();
         toXml.setCriteriaList(xmlData.getCriteria());
-        toXml.createXml();
-        toXml.writeToXml(pathname);
+        toXml.createXml(pathname);
     }
 
 }

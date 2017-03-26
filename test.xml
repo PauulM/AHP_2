@@ -1,1 +1,86 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><goal><criterium><name>climate</name><weight to="sightseeing">0.5</weight><weight to="environment">0.25</weight><criterium><name>temperature</name><weight to="rain">2.0</weight><alternative><name>rome</name><priority to="barcelona">1.0</priority><priority to="reykjavik">4.0</priority></alternative><alternative><name>barcelona</name><priority to="rome">1.0</priority><priority to="reykjavik">4.0</priority></alternative><alternative><name>reykjavik</name><priority to="rome">0.25</priority><priority to="barcelona">0.25</priority></alternative></criterium><criterium><name>rain</name><weight to="temperature">1.0</weight><alternative><name>rome</name><priority to="barcelona">0.75</priority><priority to="reykjavik">3.0</priority></alternative><alternative><name>barcelona</name><priority to="rome">1.33</priority><priority to="reykjavik">2.0</priority></alternative><alternative><name>reykjavik</name><priority to="rome">0.33</priority><priority to="barcelona">0.5</priority></alternative></criterium></criterium><criterium><name>sightseeing</name><weight to="climate">2.0</weight><weight to="environment">0.5</weight><alternative><name>rome</name><priority to="barcelona">2.0</priority><priority to="reykjavik">6.0</priority></alternative><alternative><name>barcelona</name><priority to="rome">0.5</priority><priority to="reykjavik">3.0</priority></alternative><alternative><name>reykjavik</name><priority to="rome">0.16</priority><priority to="barcelona">0.33</priority></alternative></criterium><criterium><name>environment</name><weight to="climate">4.0</weight><weight to="sightseeing">2.0</weight><alternative><name>rome</name><priority to="barcelona">0.5</priority><priority to="reykjavik">0.125</priority></alternative><alternative><name>barcelona</name><priority to="rome">2.0</priority><priority to="reykjavik">0.25</priority></alternative><alternative><name>reykjavik</name><priority to="rome">8.0</priority><priority to="barcelona">4.0</priority></alternative></criterium></goal>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<goal>
+  <criterium>
+    <name>climate</name>
+    <weight to="sightseeing">0.5</weight>
+    <weight to="environment">0.25</weight>
+    <criterium>
+      <name>temperature</name>
+      <weight to="rain">2.0</weight>
+      <alternative>
+        <name>rome</name>
+        <priority to="barcelona">1.0</priority>
+        <priority to="reykjavik">4.0</priority>
+      </alternative>
+      <alternative>
+        <name>barcelona</name>
+        <priority to="rome">1.0</priority>
+        <priority to="reykjavik">4.0</priority>
+      </alternative>
+      <alternative>
+        <name>reykjavik</name>
+        <priority to="rome">0.25</priority>
+        <priority to="barcelona">0.25</priority>
+      </alternative>
+    </criterium>
+    <criterium>
+      <name>rain</name>
+      <weight to="temperature">1.0</weight>
+      <alternative>
+        <name>rome</name>
+        <priority to="barcelona">0.75</priority>
+        <priority to="reykjavik">3.0</priority>
+      </alternative>
+      <alternative>
+        <name>barcelona</name>
+        <priority to="rome">1.33</priority>
+        <priority to="reykjavik">2.0</priority>
+      </alternative>
+      <alternative>
+        <name>reykjavik</name>
+        <priority to="rome">0.33</priority>
+        <priority to="barcelona">0.5</priority>
+      </alternative>
+    </criterium>
+  </criterium>
+  <criterium>
+    <name>sightseeing</name>
+    <weight to="climate">2.0</weight>
+    <weight to="environment">0.5</weight>
+    <alternative>
+      <name>rome</name>
+      <priority to="barcelona">2.0</priority>
+      <priority to="reykjavik">6.0</priority>
+    </alternative>
+    <alternative>
+      <name>barcelona</name>
+      <priority to="rome">0.5</priority>
+      <priority to="reykjavik">3.0</priority>
+    </alternative>
+    <alternative>
+      <name>reykjavik</name>
+      <priority to="rome">0.16</priority>
+      <priority to="barcelona">0.33</priority>
+    </alternative>
+  </criterium>
+  <criterium>
+    <name>environment</name>
+    <weight to="climate">4.0</weight>
+    <weight to="sightseeing">2.0</weight>
+    <alternative>
+      <name>rome</name>
+      <priority to="barcelona">0.5</priority>
+      <priority to="reykjavik">0.125</priority>
+    </alternative>
+    <alternative>
+      <name>barcelona</name>
+      <priority to="rome">2.0</priority>
+      <priority to="reykjavik">0.25</priority>
+    </alternative>
+    <alternative>
+      <name>reykjavik</name>
+      <priority to="rome">8.0</priority>
+      <priority to="barcelona">4.0</priority>
+    </alternative>
+  </criterium>
+</goal>
