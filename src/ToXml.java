@@ -1,3 +1,4 @@
+import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import javax.xml.transform.Transformer;
@@ -59,7 +60,41 @@ public class ToXml {
 
     private void handleSiblingsCriteria(ArrayList<Criterion> siblingsCriteria, Element parentElement) {
         for(Criterion c : siblingsCriteria){
-            
+            Element criterion = document.createElement("criterium");
+            Element name = document.createElement("name");
+            name.appendChild(document.createTextNode(c.getName()));
+            criterion.appendChild(name);
+            for(Criterion c1 : siblingsCriteria){
+                if(c.getName().equals(c1.getName()))
+                    continue;
+                Element weight = document.createElement("weight");
+                Attr to = document.createAttribute("to");
+                to.setValue(c1.getName());
+                weight.setAttributeNode(to);
+                weight.appendChild(document.createTextNode(c.findWeightValueToByName(c1.getName()).toString()));
+                criterion.appendChild(weight);
+            }
+            parentElement.appendChild(criterion);
+            if(c.hasSubcriteria())
+                handleSiblingsCriteria(c.getSubCriteriaList(),criterion);
+            else{
+                for(Alternative a : alternativesList){
+                    Element alt = document.createElement("alternative");
+                    Element altName = document.createElement("name");
+                    alt.appendChild(altName);
+                    for(Alternative a1 : alternativesList){
+                        if(a.getName().equals(a1.getName()))
+                            continue;
+                        Element priority = document.createElement("priority");
+                        Attr altTo = document.createAttribute("to");
+                        altTo.setValue(a1.getName());
+                        priority.setAttributeNode(altTo);
+                        priority.appendChild(document.createTextNode(a.findPriorityToByName(a1.getName()).toString()));
+                        alt.appendChild(priority);
+                    }
+                    criterion.appendChild(alt);
+                }
+            }
         }
     }
 
@@ -79,5 +114,14 @@ public class ToXml {
                 rootCriteria.add(c);
         }
         return rootCriteria;
+    }
+
+    private Criterion findSiblingCriterionByName(String name){
+        Criterion result = null;
+        for(Criterion c : criteriaList){
+            if(c.getName().equals(name))
+                result = c;
+        }
+        return result;
     }
 }
