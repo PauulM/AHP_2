@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller">
+   <top>
+      <HBox prefHeight="100.0" prefWidth="200.0" spacing="60.0" BorderPane.alignment="CENTER">
+         <children>
+            <Button fx:id="addAlternativeButton" mnemonicParsing="false" onAction="#buttonAddAlternative" prefHeight="45.0" prefWidth="140.0" text="ADD ALTERNATIVE">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Button>
+            <Button fx:id="addCriterionButton" mnemonicParsing="false" onAction="#buttonAddCriterion" prefHeight="45.0" prefWidth="140.0" text="ADD CRITERION">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Button>
+            <VBox alignment="TOP_CENTER" prefHeight="70.0" prefWidth="508.0">
+               <children>
+                  <Label alignment="CENTER" prefHeight="17.0" prefWidth="541.0" text="Path to XML file:" textAlignment="CENTER">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+                  <HBox>
+                     <children>
+                        <TextField alignment="CENTER" prefHeight="25.0" prefWidth="423.0" promptText="type path" />
+                        <Button contentDisplay="CENTER" mnemonicParsing="false" prefHeight="25.0" prefWidth="86.0" text="ACCEPT" />
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+            <HBox prefHeight="33.0" prefWidth="269.0" spacing="10.0">
+               <children>
+                  <Label alignment="CENTER_RIGHT" prefHeight="44.0" prefWidth="106.0" text="Consistency Ratio:" textAlignment="RIGHT" />
+                  <TextField prefHeight="40.0" prefWidth="75.0" text="0.1">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </TextField>
+                  <Button contentDisplay="CENTER" mnemonicParsing="false" prefHeight="40.0" prefWidth="75.0" text="ACCEPT" />
+               </children>
+            </HBox>
+         </children>
+         <padding>
+            <Insets left="30.0" top="30.0" />
+         </padding>
+      </HBox>
+   </top>
+   <left>
+      <HBox prefHeight="620.0" prefWidth="400.0" BorderPane.alignment="CENTER">
+         <children>
+            <VBox fx:id="alternativesList" prefHeight="575.0" prefWidth="186.0">
+               <children>
+                  <Label alignment="CENTER" prefHeight="70.0" prefWidth="200.0" text="ALTERNATIVES:">
+                     <font>
+                        <Font name="System Bold" size="24.0" />
+                     </font>
+                  </Label>
+                  <Separator prefHeight="71.0" prefWidth="200.0" />
+                  <VBox fx:id="alternativesList" prefHeight="200.0" prefWidth="100.0" />
+               </children>
+            </VBox>
+            <Separator orientation="VERTICAL" prefHeight="620.0" prefWidth="7.0" />
+            <VBox fx:id="criteriaList" prefHeight="620.0" prefWidth="200.0">
+               <children>
+                  <Label alignment="CENTER" prefHeight="70.0" prefWidth="200.0" text="CRITERIA:">
+                     <font>
+                        <Font name="System Bold" size="24.0" />
+                     </font>
+                  </Label>
+                  <Separator prefHeight="70.0" prefWidth="200.0" />
+                  <VBox fx:id="criteriaList" prefHeight="200.0" prefWidth="100.0" />
+               </children>
+            </VBox>
+            <Separator orientation="VERTICAL" prefHeight="620.0" prefWidth="3.0" />
+         </children>
+      </HBox>
+   </left>
+   <center>
+      <VBox prefHeight="200.0" prefWidth="100.0" spacing="30.0" BorderPane.alignment="CENTER">
+         <children>
+            <TextArea fx:id="infoArea" editable="false" prefHeight="105.0" prefWidth="880.0" text="Add alternatives, after accepting the alternatives you will not be able to add more.&#10;Consistency ratio set to 0.1">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </TextArea>
+            <AnchorPane fx:id="mainPane" prefHeight="440.0" prefWidth="880.0" />
+         </children>
+      </VBox>
+   </center>
+   <bottom>
+      <HBox alignment="CENTER_RIGHT" prefHeight="45.0" prefWidth="1280.0" BorderPane.alignment="TOP_RIGHT">
+         <children>
+            <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="78.0" text="Reset all" />
+         </children>
+         <padding>
+            <Insets right="30.0" />
+         </padding>
+      </HBox>
+   </bottom>
+</BorderPane>
