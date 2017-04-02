@@ -81,4 +81,15 @@ public class Criterion {
     public void setAlternativesList(ArrayList<Alternative> alternativesList) {
         this.alternativesList = alternativesList;
     }
+
+    public static Criterion findCriterionInListByName(ArrayList<Criterion> list, String name){
+        Criterion result = null;
+        for(Criterion c : list){
+            if(c.getName().equals(name)) {
+                result = c;
+                break;
+            }
+        }
+        return result;
+    }
 }
