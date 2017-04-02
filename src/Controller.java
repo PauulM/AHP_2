@@ -2,14 +2,14 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -197,17 +197,28 @@ public class Controller {
                 parentArea.setText("no parent");
             }
             //VBox list = (VBox) scene.lookup("#subcriteriaList");
-            Platform.runLater(()-> {
-                VBox list = (VBox) scrollPane.lookup("#subcriteriaList");
-                for (Criterion sc : criterion.getSubCriteriaList()) {
-                    Button button = new Button(sc.getName());
-                    button.setPrefWidth(Double.MAX_VALUE);
-                    list.getChildren().add(button);
-                    button.setOnAction(e -> {
-                        displayCriterionWindow(sc, e);
-                    });
-                }
-            });
+//            Platform.runLater(()-> {
+//                VBox list = (VBox) scrollPane.lookup("#subcriteriaList");
+//                for (Criterion sc : criterion.getSubCriteriaList()) {
+//                    Button button = new Button(sc.getName());
+//                    button.setPrefWidth(Double.MAX_VALUE);
+//                    list.getChildren().add(button);
+//                    button.setOnAction(e -> {
+//                        displayCriterionWindow(sc, e);
+//                    });
+//                }
+//            });
+            VBox list = new VBox();
+            list.setPrefWidth(248);
+            for (Criterion sc : criterion.getSubCriteriaList()) {
+                Button button = new Button(sc.getName());
+                button.setPrefWidth(Double.MAX_VALUE);
+                list.getChildren().add(button);
+                button.setOnAction(e -> {
+                    displayCriterionWindow(sc, e);
+                });
+            }
+            scrollPane.setContent(list);
         }
         catch(Exception e){
             e.printStackTrace();
@@ -247,5 +258,50 @@ public class Controller {
         cr = Double.parseDouble(textField.getText());
         infoArea.setText("Consistency ratio set");
     }
-}
 
+    public void specifyCriteriaWeights(ActionEvent event) throws IOException{
+        String name = ((TextArea)(((Node)event.getSource()).getScene().lookup("#criterionName"))).getText();
+        setSceneAndMainPane(((Node) event.getSource()).getScene());
+        if(!allCriteriaAdded){
+            infoArea.setText("Finish adding all criteria");
+            return;
+        }
+        loadFxmlToMainPane("GUI_SpecifyWeights.fxml");
+        TextArea criterionNameArea = (TextArea) scene.lookup("#criterionName");
+        criterionNameArea.setText(name);
+        ScrollPane scrollPane = (ScrollPane) scene.lookup("#scrollPane");
+        HBox hBox = new HBox();
+        hBox.setPrefWidth(Double.MAX_VALUE);
+        VBox toVBox = new VBox();
+        toVBox.setPrefWidth(122);
+        VBox valueVBox = new VBox();
+        valueVBox.setPrefWidth(122);
+        hBox.getChildren().addAll(toVBox, valueVBox);
+        scrollPane.setContent(hBox);
+        ArrayList<Criterion> siblingsCriteria;
+
+        try{
+            Criterion parentCriterion = Criterion.findParentInHashMapByName(criteriaMap, name);
+            String parentName = parentCriterion.getName();
+            siblingsCriteria = Criterion.findSiblingsCriteriaByParentName(new ArrayList<>(criteriaMap.values()), parentName);
+        }
+        catch (NullPointerException ex){
+            siblingsCriteria = Criterion.findSiblingsCriteriaByParentName(new ArrayList<>(criteriaMap.values()), null);
+        }
+        for(Criterion sc : siblingsCriteria){
+            if(sc.getName().equals(name))
+                continue;
+            Label label = new Label();
+            label.setText(sc.getName());
+            label.setPrefWidth(Double.MAX_VALUE);
+            label.setAlignment(Pos.CENTER);
+            label.setFont(Font.font(14));
+            toVBox.getChildren().add(label);
+            TextField tf = new TextField();
+            tf.setPrefWidth(Double.MAX_VALUE);
+            //tf.setId(criteriaMap.get(sc).toString());
+            valueVBox.getChildren().add(tf);
+        }
+    }
+
+}

@@ -1,4 +1,7 @@
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by pawma on 15.03.2017.
@@ -91,5 +94,39 @@ public class Criterion {
             }
         }
         return result;
+    }
+
+    public static ArrayList<Criterion> findSiblingsCriteriaByParentName(ArrayList<Criterion> list, String parentName){
+        ArrayList<Criterion> result = new ArrayList<>();
+        for(Criterion c : list){
+            Criterion parentCriterion = c.getParentCriterium();
+            if(parentCriterion == null){
+                if(parentName == null){
+                    result.add(c);
+                }
+            }
+            else{
+                if(parentCriterion.getName().equals(parentName)){
+                    result.add(c);
+                }
+            }
+        }
+        return result;
+    }
+
+    public static Criterion findParentInHashMapByName(Map<Integer, Criterion> map, String name){
+        List<Criterion> list = new ArrayList<>(map.values());
+        Criterion parent = null;
+        for(Criterion c : list){
+            try {
+                if (c.getName().equals(name)) {
+                    parent = c.getParentCriterium();
+                }
+            }
+            catch (NullPointerException ex){
+                return null;
+            }
+        }
+        return parent;
     }
 }
