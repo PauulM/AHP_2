@@ -271,11 +271,11 @@ public class Controller {
         criterionNameArea.setText(name);
         ScrollPane scrollPane = (ScrollPane) scene.lookup("#scrollPane");
         HBox hBox = new HBox();
-        hBox.setPrefWidth(Double.MAX_VALUE);
+        hBox.setPrefWidth(248);
         VBox toVBox = new VBox();
-        toVBox.setPrefWidth(122);
+        toVBox.setPrefWidth(123);
         VBox valueVBox = new VBox();
-        valueVBox.setPrefWidth(122);
+        valueVBox.setPrefWidth(123);
         hBox.getChildren().addAll(toVBox, valueVBox);
         scrollPane.setContent(hBox);
         ArrayList<Criterion> siblingsCriteria;
