@@ -7,25 +7,26 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="440.0" prefWidth="880.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller">
    <children>
-      <Label layoutX="14.0" layoutY="14.0" prefHeight="80.0" prefWidth="512.0" text="SPECIFY CRITERIA WEIGHTS">
+      <Label layoutX="14.0" layoutY="14.0" prefHeight="80.0" prefWidth="596.0" text="SPECIFY ALTERNATIVE PRIORITIES">
          <font>
             <Font name="System Bold" size="36.0" />
          </font>
       </Label>
-      <Label alignment="CENTER" layoutX="200.0" layoutY="86.0" prefHeight="45.0" prefWidth="70.0" text="Name:" textAlignment="RIGHT">
+      <Label alignment="CENTER" layoutX="101.0" layoutY="103.0" prefHeight="45.0" prefWidth="187.0" text="Criterion Name:" textAlignment="RIGHT">
          <font>
             <Font size="24.0" />
          </font>
       </Label>
-      <TextArea fx:id="criterionName" editable="false" layoutX="299.0" layoutY="94.0" prefHeight="30.0" prefWidth="250.0" />
-      <Label alignment="CENTER" layoutX="169.0" layoutY="176.0" prefHeight="45.0" prefWidth="132.0" text="Weights:" textAlignment="RIGHT">
+      <TextArea fx:id="criterionName" editable="false" layoutX="299.0" layoutY="110.0" prefHeight="30.0" prefWidth="250.0" />
+      <Label alignment="CENTER" layoutX="167.0" layoutY="176.0" prefHeight="45.0" prefWidth="132.0" text="Priorities:" textAlignment="RIGHT">
          <font>
             <Font size="24.0" />
          </font>
       </Label>
       <ScrollPane fx:id="scrollPane" layoutX="299.0" layoutY="176.0" prefHeight="229.0" prefViewportHeight="104.0" prefViewportWidth="233.0" prefWidth="250.0" />
       <Button layoutX="593.0" layoutY="360.0" mnemonicParsing="false" onAction="#acceptSpecifyWeightsButton" prefHeight="45.0" prefWidth="132.0" text="ACCEPT" />
-      <Label alignment="CENTER" layoutX="329.0" layoutY="142.0" prefHeight="23.0" prefWidth="62.0" text="TO" />
-      <Label alignment="CENTER" layoutX="469.0" layoutY="145.0" text="VALUE" />
+      <Label alignment="CENTER" layoutX="299.0" layoutY="142.0" prefHeight="23.0" prefWidth="62.0" text="BASE" />
+      <Label alignment="CENTER" layoutX="504.0" layoutY="145.0" text="VALUE" />
+      <Label alignment="CENTER" layoutX="416.0" layoutY="145.0" text="TO" />
    </children>
 </AnchorPane>

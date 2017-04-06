@@ -21,7 +21,7 @@ public class Criterion {
         return null;
     }
 
-    public Float findWeightValueToByName(String to){
+    public Double findWeightValueToByName(String to){
         for(Weight w : weightsList){
             if (w.getTo().equals(to))
                 return w.getValue();
@@ -128,5 +128,26 @@ public class Criterion {
             }
         }
         return parent;
+    }
+
+    public static Criterion findInHashMapByName(Map<Integer, Criterion> map, String name){
+        List<Criterion> list = new ArrayList<>(map.values());
+        Criterion result = null;
+        for(Criterion c : list){
+            if(c.getName().equals(name)) {
+                result = c;
+                break;
+            }
+        }
+        return result;
+    }
+
+    public static boolean hasGivenWeight(Criterion criterion, Weight weight){
+        boolean result = false;
+        for(Weight w : criterion.getWeightsList()){
+            if(w.getTo().equals(weight.getTo()) && w.getValue().equals(weight.getValue()))
+                result = true;
+        }
+        return result;
     }
 }

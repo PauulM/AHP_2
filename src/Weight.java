@@ -3,7 +3,7 @@
  */
 public class Weight {
     private String to;
-    private float value;
+    private Double value;
 
 
     public String getTo() {
@@ -14,11 +14,11 @@ public class Weight {
         this.to = to;
     }
 
-    public float getValue() {
+    public Double getValue() {
         return value;
     }
 
-    public void setValue(float value) {
+    public void setValue(Double value) {
         this.value = value;
     }
 }

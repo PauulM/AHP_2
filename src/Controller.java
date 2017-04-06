@@ -1,6 +1,5 @@
-import javafx.application.Platform;
+import Jama.Matrix;
 import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -16,6 +15,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static jdk.nashorn.internal.objects.NativeMath.round;
+
 /**
  * Created by pawma on 30.03.2017.
  */
@@ -30,9 +31,13 @@ public class Controller {
     private static String pathToXml;
     private static Double cr = 0.1;
 
+    private static ArrayList<Criterion> currentSiblings = null;
+
     private Scene scene;
     private AnchorPane mainPane;
     private TextArea infoArea;
+
+    private static ArrayList<Criterion> finalList = new ArrayList<>();
 
     public Controller() {
 //        //this.criteriaList = new ArrayList<>();
@@ -187,27 +192,13 @@ public class Controller {
             TextArea nameArea = (TextArea) scene.lookup("#criterionName");
             nameArea.setText(criterion.getName());
             TextArea parentArea = (TextArea) scene.lookup("#criterionParent");
-            //VBox list = (VBox) scene.lookup("#subcriteriaList");
             ScrollPane scrollPane = (ScrollPane) scene.lookup("#scrollPane");
-            //VBox list = (VBox) scrollPane.lookup("#subcriteriaList");
             try{
                 parentArea.setText(criterion.getParentCriterium().getName());
             }
             catch (NullPointerException ex){
                 parentArea.setText("no parent");
             }
-            //VBox list = (VBox) scene.lookup("#subcriteriaList");
-//            Platform.runLater(()-> {
-//                VBox list = (VBox) scrollPane.lookup("#subcriteriaList");
-//                for (Criterion sc : criterion.getSubCriteriaList()) {
-//                    Button button = new Button(sc.getName());
-//                    button.setPrefWidth(Double.MAX_VALUE);
-//                    list.getChildren().add(button);
-//                    button.setOnAction(e -> {
-//                        displayCriterionWindow(sc, e);
-//                    });
-//                }
-//            });
             VBox list = new VBox();
             list.setPrefWidth(248);
             for (Criterion sc : criterion.getSubCriteriaList()) {
@@ -261,6 +252,7 @@ public class Controller {
 
     public void specifyCriteriaWeights(ActionEvent event) throws IOException{
         String name = ((TextArea)(((Node)event.getSource()).getScene().lookup("#criterionName"))).getText();
+        Criterion current = Criterion.findCriterionInListByName(new ArrayList<>(criteriaMap.values()),name);
         setSceneAndMainPane(((Node) event.getSource()).getScene());
         if(!allCriteriaAdded){
             infoArea.setText("Finish adding all criteria");
@@ -278,17 +270,19 @@ public class Controller {
         valueVBox.setPrefWidth(123);
         hBox.getChildren().addAll(toVBox, valueVBox);
         scrollPane.setContent(hBox);
-        ArrayList<Criterion> siblingsCriteria;
-
+        //ArrayList<Criterion> siblingsCriteria;
+        currentSiblings = new ArrayList<>();
         try{
             Criterion parentCriterion = Criterion.findParentInHashMapByName(criteriaMap, name);
             String parentName = parentCriterion.getName();
-            siblingsCriteria = Criterion.findSiblingsCriteriaByParentName(new ArrayList<>(criteriaMap.values()), parentName);
+            //siblingsCriteria = Criterion.findSiblingsCriteriaByParentName(new ArrayList<>(criteriaMap.values()), parentName);
+            currentSiblings = Criterion.findSiblingsCriteriaByParentName(new ArrayList<>(criteriaMap.values()), parentName);
         }
         catch (NullPointerException ex){
-            siblingsCriteria = Criterion.findSiblingsCriteriaByParentName(new ArrayList<>(criteriaMap.values()), null);
+            //siblingsCriteria = Criterion.findSiblingsCriteriaByParentName(new ArrayList<>(criteriaMap.values()), null);
+            currentSiblings = Criterion.findSiblingsCriteriaByParentName(new ArrayList<>(criteriaMap.values()), null);
         }
-        for(Criterion sc : siblingsCriteria){
+        for(Criterion sc : currentSiblings){
             if(sc.getName().equals(name))
                 continue;
             Label label = new Label();
@@ -299,9 +293,123 @@ public class Controller {
             toVBox.getChildren().add(label);
             TextField tf = new TextField();
             tf.setPrefWidth(Double.MAX_VALUE);
+            try{
+                tf.setText(current.findWeightValueToByName(sc.getName()).toString());
+            }
+            catch (Exception ex){}
             //tf.setId(criteriaMap.get(sc).toString());
             valueVBox.getChildren().add(tf);
         }
+    }
+
+    public void acceptSpecifyWeightsButton(ActionEvent event){
+        setSceneAndMainPane(((Node) event.getSource()).getScene());
+        String name = ((TextArea)scene.lookup("#criterionName")).getText();
+        Criterion current = Criterion.findCriterionInListByName(currentSiblings, name);
+        ScrollPane scrollPane = (ScrollPane)scene.lookup("#scrollPane");
+        HBox hBox = (HBox) scrollPane.getContent();
+        VBox nameBox = (VBox)hBox.getChildren().get(0);
+        VBox valueBox = (VBox)hBox.getChildren().get(1);
+        int i = 0;
+        for(Criterion sc : currentSiblings){
+            if(sc.getName().equals(name))
+                continue;
+            Weight weight = new Weight();
+            weight.setTo(((Label)nameBox.getChildren().get(i)).getText());
+            weight.setValue(Double.parseDouble(((TextField)valueBox.getChildren().get(i)).getText()));
+            if(!Criterion.hasGivenWeight(current, weight))
+                current.addWeight(weight);
+            Weight oppositeWeight = new Weight();
+            oppositeWeight.setValue(1d/Double.parseDouble(((TextField)valueBox.getChildren().get(i)).getText()));
+            oppositeWeight.setTo(current.getName());
+            Criterion opposite = Criterion.findCriterionInListByName(currentSiblings, sc.getName());
+            if(!Criterion.hasGivenWeight(opposite, oppositeWeight))
+                opposite.addWeight(oppositeWeight);
+            i++;
+        }
+        infoArea.setText("Choice accepted");
+    }
+
+    public void applyWeights(ActionEvent event) throws Exception{
+        setSceneAndMainPane(((Node) event.getSource()).getScene());
+        MyMatrix myMatrix = MyMatrix.createWeightMatrixFromSiblingCriteria(currentSiblings);
+        Matrix matrix = myMatrix.toMatrix();
+        Double ratio = Consistency.calculateConsistencyRatio(matrix);
+        if(ratio > cr){
+            infoArea.setText("Consistency ratio is " + ratio + " which is greater than acceptable " + round(cr, 2) +
+            "\nTry again");
+        }
+        else{
+            finalList.addAll(currentSiblings);
+        }
+        currentSiblings = null;
+    }
+
+    public void specifyPrioritiesButton(ActionEvent event)throws IOException{
+        setSceneAndMainPane(((Node) event.getSource()).getScene());
+        if(!allAlternativesAdded){
+            infoArea.setText("Finish adding alternatives");
+            return;
+        }
+        String name = ((TextArea)(((Node)event.getSource()).getScene().lookup("#criterionName"))).getText();
+        Criterion current = Criterion.findCriterionInListByName(new ArrayList<>(currentSiblings),name);
+        if(current == null){
+            infoArea.setText("This criterion has not been accepted");
+            return;
+        }
+        if(current.hasSubcriteria()){
+            infoArea.setText("You cannot specify alternatives if the criterion has subcriteria");
+            return;
+        }
+        loadFxmlToMainPane("GUI_SpecifyPriorities.fxml");
+        TextArea criterionNameArea = (TextArea) scene.lookup("#criterionName");
+        criterionNameArea.setText(name);
+        ScrollPane scrollPane = (ScrollPane) scene.lookup("#scrollPane");
+        HBox hBox = new HBox();
+        hBox.setPrefWidth(248);
+        VBox toVBox = new VBox();
+        toVBox.setPrefWidth(82);
+        VBox baseVBox = new VBox();
+        baseVBox.setPrefWidth(82);
+        VBox valueVBox = new VBox();
+        valueVBox.setPrefWidth(82);
+        hBox.getChildren().addAll(baseVBox, toVBox, valueVBox);
+        scrollPane.setContent(hBox);
+        ArrayList<Alternative> alternatives = new ArrayList<>(alternativesMap.values());
+        for (int i = 0; i < alternatives.size()-1; i++){
+            for(int j = 0; j < alternatives.size(); j++){
+                if(i >= j)
+                    continue;
+                Label labelBase = new Label();
+                labelBase.setText(alternatives.get(i).getName());
+                labelBase.setPrefWidth(Double.MAX_VALUE);
+                labelBase.setAlignment(Pos.CENTER);
+                labelBase.setFont(Font.font(14));
+                baseVBox.getChildren().add(labelBase);
+                Label labelTo = new Label();
+                labelTo.setText(alternatives.get(j).getName());
+                labelTo.setPrefWidth(Double.MAX_VALUE);
+                labelTo.setAlignment(Pos.CENTER);
+                labelTo.setFont(Font.font(14));
+                toVBox.getChildren().add(labelTo);
+                TextField tf = new TextField();
+                tf.setPrefWidth(Double.MAX_VALUE);
+                valueVBox.getChildren().add(tf);
+            }
+        }
+    }
+
+    public void acceptSpecifyPrioritiesButton(ActionEvent event){
+        setSceneAndMainPane(((Node) event.getSource()).getScene());
+        String name = ((TextArea)scene.lookup("#criterionName")).getText();
+        Criterion current = Criterion.findCriterionInListByName(finalList, name);
+        ScrollPane scrollPane = (ScrollPane)scene.lookup("#scrollPane");
+        HBox hBox = (HBox) scrollPane.getContent();
+        VBox baseBox = (VBox)hBox.getChildren().get(0);
+        VBox toBox = (VBox) hBox.getChildren().get(1);
+        VBox valueBox = (VBox)hBox.getChildren().get(2);
+        ArrayList<Alternative> alternatives = new ArrayList<>();
+        
     }
 
 }

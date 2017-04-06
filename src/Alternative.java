@@ -23,7 +23,7 @@ public class Alternative {
         return priorityList;
     }
 
-    public Float findPriorityToByName(String to){
+    public Double findPriorityToByName(String to){
         for(Weight w : priorityList){
             if(w.getTo().equals(to))
                 return w.getValue();

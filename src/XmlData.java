@@ -63,7 +63,7 @@ public class XmlData {
                     Weight weight = new Weight();
                     Element e = (Element) childList.item(i);
                     weight.setTo(e.getAttribute("to"));
-                    weight.setValue(Float.parseFloat(childList.item(i).getTextContent()));
+                    weight.setValue(Double.parseDouble(childList.item(i).getTextContent()));
                     if(parentCriterion != null)
                         parentCriterion.addWeight(weight);
                 }
@@ -90,7 +90,7 @@ public class XmlData {
                     Weight weight = new Weight();
                     Element el = (Element) childList.item(i);
                     weight.setTo(el.getAttribute("to"));
-                    weight.setValue(Float.parseFloat(childList.item(i).getTextContent()));
+                    weight.setValue(Double.parseDouble(childList.item(i).getTextContent()));
                     alternative.addPriority(weight);
                 }
             }
