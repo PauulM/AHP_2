@@ -10,6 +10,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -334,13 +335,20 @@ public class Controller {
         setSceneAndMainPane(((Node) event.getSource()).getScene());
         MyMatrix myMatrix = MyMatrix.createWeightMatrixFromSiblingCriteria(currentSiblings);
         Matrix matrix = myMatrix.toMatrix();
-        Double ratio = Consistency.calculateConsistencyRatio(matrix);
-        if(ratio > cr){
-            infoArea.setText("Consistency ratio is " + ratio + " which is greater than acceptable " + round(cr, 2) +
-            "\nTry again");
+        try{
+            Double ratio = Consistency.calculateConsistencyRatio(matrix);
+            if(ratio > cr){
+                infoArea.setText("Consistency ratio is " + ratio + " which is greater than acceptable " + ratio +
+                        "\nTry again");
+            }
+            else{
+                finalList.addAll(currentSiblings);
+                infoArea.setText("Weights added, CR=" + ratio);
+            }
         }
-        else{
+        catch (Exception ex){
             finalList.addAll(currentSiblings);
+            infoArea.setText("Problem occurred, CR not calculated\n" + ex.getMessage());
         }
         currentSiblings = null;
     }
@@ -352,7 +360,9 @@ public class Controller {
             return;
         }
         String name = ((TextArea)(((Node)event.getSource()).getScene().lookup("#criterionName"))).getText();
-        Criterion current = Criterion.findCriterionInListByName(new ArrayList<>(currentSiblings),name);
+        Criterion current = Criterion.findCriterionInListByName(new ArrayList<>(criteriaMap.values()),name);
+        // POWYŻEJ ZMIANA, PRÓBUJĘ ZROBIĆ ŻEBY NIE TRZEBA BYŁO OKREŚLAĆ WAG PRZED OKREŚLENIEM PRIORYTETÓW
+        // WCZEŚNIEJ BYŁO findCriterionInListByName(currentSiblings,name);
         if(current == null){
             infoArea.setText("This criterion has not been accepted");
             return;
@@ -394,6 +404,11 @@ public class Controller {
                 toVBox.getChildren().add(labelTo);
                 TextField tf = new TextField();
                 tf.setPrefWidth(Double.MAX_VALUE);
+                try{
+                    tf.setText(current.findAlternativeByName(
+                            alternatives.get(i).getName()).findPriorityToByName(alternatives.get(j).getName()).toString());
+                }
+                catch (Exception ex){}
                 valueVBox.getChildren().add(tf);
             }
         }
@@ -402,14 +417,83 @@ public class Controller {
     public void acceptSpecifyPrioritiesButton(ActionEvent event){
         setSceneAndMainPane(((Node) event.getSource()).getScene());
         String name = ((TextArea)scene.lookup("#criterionName")).getText();
-        Criterion current = Criterion.findCriterionInListByName(finalList, name);
+        Criterion current = Criterion.findCriterionInListByName(new ArrayList<>(criteriaMap.values()), name);
+        // PATRZ METODA specifyPrioritiesButton
         ScrollPane scrollPane = (ScrollPane)scene.lookup("#scrollPane");
         HBox hBox = (HBox) scrollPane.getContent();
         VBox baseBox = (VBox)hBox.getChildren().get(0);
         VBox toBox = (VBox) hBox.getChildren().get(1);
         VBox valueBox = (VBox)hBox.getChildren().get(2);
-        ArrayList<Alternative> alternatives = new ArrayList<>();
-        
+        for(int i = 0; i < baseBox.getChildren().size(); i++){
+            Alternative baseAlt = new Alternative();
+            baseAlt.setName(((Label)baseBox.getChildren().get(i)).getText());
+            Weight baseWeight = new Weight();
+            baseWeight.setTo(((Label) toBox.getChildren().get(i)).getText());
+            baseWeight.setValue(Double.parseDouble(((TextField) valueBox.getChildren().get(i)).getText()));
+            if(current.findAlternativeByName(baseAlt.getName()) == null) {
+                baseAlt.addPriority(baseWeight);
+                current.addAlternative(baseAlt);
+            }
+            else{
+                baseAlt = current.findAlternativeByName(baseAlt.getName());
+                baseAlt.addPriority(baseWeight);
+            }
+
+            Alternative toAlt = new Alternative();
+            toAlt.setName(((Label)toBox.getChildren().get(i)).getText());
+            Weight toWeight = new Weight();
+            toWeight.setTo(((Label) baseBox.getChildren().get(i)).getText());
+            toWeight.setValue(Double.parseDouble(((TextField) valueBox.getChildren().get(i)).getText()));
+            if(current.findAlternativeByName(toAlt.getName()) == null) {
+                toAlt.addPriority(toWeight);
+                current.addAlternative(toAlt);
+            }
+            else{
+                toAlt = current.findAlternativeByName(toAlt.getName());
+                toAlt.addPriority(toWeight);
+            }
+        }
+        MyMatrix myMatrix = MyMatrix.createPriorityMatrixFromAlternativesList(current.getAlternativesList());
+        Matrix matrix = myMatrix.toMatrix();
+        try{
+            Double ratio = Consistency.calculateConsistencyRatio(matrix);
+            if(ratio > cr){
+                infoArea.setText("Consistency ratio is " + ratio + " which is greater than acceptable " + ratio +
+                        "\nTry again");
+                current.getAlternativesList().clear();
+                return;
+            }
+            infoArea.setText("Priorities set\nCR = " + ratio);
+        }
+        catch (Exception ex){
+            infoArea.setText("Problem occurred, CR not calculated\n" + ex.getMessage());
+        }
+    }
+
+    public void generateXmlButton(ActionEvent event){
+        setSceneAndMainPane(((Node) event.getSource()).getScene());
+        if(pathToXml == null){
+            infoArea.setText("Path to XML not specified!");
+            return;
+        }
+        if(!allAlternativesAdded){
+            infoArea.setText("Add alternatives first");
+            return;
+        }
+        if(!allCriteriaAdded){
+            infoArea.setText("Add criteria first");
+            return;
+        }
+        if(finalList.isEmpty()){
+            infoArea.setText("Some information is missing");
+            return;
+        }
+        File file = new File(pathToXml);
+        file.delete();
+        ToXml toXml = new ToXml();
+        toXml.setCriteriaList(finalList);
+        toXml.createXml(pathToXml);
+        infoArea.setText("XML Successfully generated");
     }
 
 }

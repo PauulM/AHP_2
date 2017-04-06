@@ -29,7 +29,7 @@
                   </Label>
                   <HBox>
                      <children>
-                        <TextField fx:id="pathToXmlValue" alignment="CENTER" prefHeight="25.0" prefWidth="423.0" promptText="type path" />
+                        <TextField fx:id="pathToXmlValue" alignment="CENTER" prefHeight="25.0" prefWidth="423.0" promptText="type path" text="C:\Users\pawma\Informatyka\Badania\Projekt 2\test.xml" />
                         <Button contentDisplay="CENTER" mnemonicParsing="false" onAction="#setPathToXml" prefHeight="25.0" prefWidth="86.0" text="ACCEPT" />
                      </children>
                   </HBox>
@@ -107,6 +107,11 @@
                   <Button layoutX="248.0" mnemonicParsing="false" onAction="#criteriaAcceptedButton" prefHeight="44.0" prefWidth="107.0" text="ACCEPT CRITERIA">
                      <font>
                         <Font size="10.0" />
+                     </font>
+                  </Button>
+                  <Button layoutX="637.0" mnemonicParsing="false" onAction="#generateXmlButton" prefHeight="44.0" prefWidth="285.0" text="GENERATE XML">
+                     <font>
+                        <Font size="20.0" />
                      </font>
                   </Button>
                </children>

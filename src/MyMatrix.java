@@ -164,7 +164,7 @@ public class MyMatrix {
         return map;
     }
 
-    public MyMatrix createPriorityMatrixFromAlternativesList(ArrayList<Alternative> alternatives) {//, HashMap<Integer, String> map){
+    public static MyMatrix createPriorityMatrixFromAlternativesList(ArrayList<Alternative> alternatives) {//, HashMap<Integer, String> map){
         HashMap<Integer, String> alternativesIDs = applyIdToAlternatives(alternatives);
         MyMatrix matrix = null;
         try {
