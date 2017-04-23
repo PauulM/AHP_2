@@ -53,6 +53,7 @@ public class Controller {
         this.mainPane.getChildren().setAll(pane);
     }
 
+
     public void buttonAddAlternative(ActionEvent event) throws IOException{
         setSceneAndMainPane(((Node) event.getSource()).getScene());
         if(allAlternativesAdded){

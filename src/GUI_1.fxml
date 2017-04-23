@@ -53,7 +53,7 @@
       </HBox>
    </top>
    <left>
-      <HBox prefHeight="620.0" prefWidth="400.0" BorderPane.alignment="CENTER">
+      <HBox fx:id="mainHBox" prefHeight="620.0" prefWidth="400.0" BorderPane.alignment="CENTER">
          <children>
             <VBox prefHeight="620.0" prefWidth="200.0">
                <children>
@@ -99,12 +99,12 @@
          <children>
             <AnchorPane prefHeight="45.0" prefWidth="1174.0">
                <children>
-                  <Button fx:id="alternativesAccepted" layoutX="22.0" mnemonicParsing="false" onAction="#alternativesAcceptedButton" prefHeight="44.0" prefWidth="135.0" text="ACCEPT ALTERNATIVES">
+                  <Button fx:id="alternativesAccepted" layoutX="-53.0" mnemonicParsing="false" onAction="#alternativesAcceptedButton" prefHeight="44.0" prefWidth="135.0" text="ACCEPT ALTERNATIVES">
                      <font>
                         <Font size="10.0" />
                      </font>
                   </Button>
-                  <Button layoutX="248.0" mnemonicParsing="false" onAction="#criteriaAcceptedButton" prefHeight="44.0" prefWidth="107.0" text="ACCEPT CRITERIA">
+                  <Button layoutX="165.0" mnemonicParsing="false" onAction="#criteriaAcceptedButton" prefHeight="44.0" prefWidth="107.0" text="ACCEPT CRITERIA">
                      <font>
                         <Font size="10.0" />
                      </font>
@@ -116,7 +116,6 @@
                   </Button>
                </children>
             </AnchorPane>
-            <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="78.0" text="Reset all" />
          </children>
          <padding>
             <Insets right="30.0" />
