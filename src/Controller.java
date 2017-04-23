@@ -16,8 +16,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import static jdk.nashorn.internal.objects.NativeMath.round;
-
 /**
  * Created by pawma on 30.03.2017.
  */
@@ -41,15 +39,10 @@ public class Controller {
     private static ArrayList<Criterion> finalList = new ArrayList<>();
 
     public Controller() {
-//        //this.criteriaList = new ArrayList<>();
-//        this.criteriaMap = new HashMap<>();
-//        //this.alternativesList = new ArrayList<>();
-//        this.alternativesMap = new HashMap<>();
-//        criteriaCount = 0;
-//        alternativesCount = 0;
+
     }
 
-    public void setSceneAndMainPane(Scene scene){
+    private void setSceneAndMainPane(Scene scene){
         this.scene = scene;
         this.mainPane = (AnchorPane) this.scene.lookup("#mainPane");
         this.infoArea = (TextArea) this.scene.lookup("#infoArea");
@@ -67,6 +60,7 @@ public class Controller {
             return;
         }
         loadFxmlToMainPane("GUI_AddAlternative.fxml");
+        infoArea.setText("Add an alternative");
     }
 
     public void alternativesAcceptedButton(ActionEvent event){
@@ -75,7 +69,7 @@ public class Controller {
             infoArea.setText("Add alternatives before accepting");
             return;
         }
-        this.allAlternativesAdded = true;
+        allAlternativesAdded = true;
         infoArea.setText("Alternatives accepted, you cannot change them now");
     }
 
@@ -85,7 +79,7 @@ public class Controller {
             infoArea.setText("Add criteria before accepting");
             return;
         }
-        this.allCriteriaAdded = true;
+        allCriteriaAdded = true;
         infoArea.setText("Criteria accepted, you cannot change them now");
     }
 
@@ -98,6 +92,10 @@ public class Controller {
         String name = textField.getText();
         if(name.length() == 0){
             infoArea.setText("Name empty");
+            return;
+        }
+        if(Alternative.findInHashMapByName(alternativesMap,name) != null){
+            infoArea.setText("Alternative already exists");
             return;
         }
         addAlternativeToList(name);
@@ -134,6 +132,7 @@ public class Controller {
         }
 
         loadFxmlToMainPane("GUI_AddCriterion.fxml");
+        infoArea.setText("Add a criterion");
     }
 
     public void buttonAcceptAddingCriterion(ActionEvent event) {
@@ -144,6 +143,10 @@ public class Controller {
         TextField nameField = (TextField)scene.lookup("#criterionNameField");
         TextField parentField = (TextField)scene.lookup("#parentNameField");
         String name = nameField.getText();
+        if(Criterion.findInHashMapByName(criteriaMap, name) != null){
+            infoArea.setText("Criterion already exists");
+            return;
+        }
         String parentName = parentField.getText();
         if(name.length() == 0){
             infoArea.setText("Name empty");
@@ -190,6 +193,7 @@ public class Controller {
         try{
             setSceneAndMainPane(((Node) event.getSource()).getScene());
             loadFxmlToMainPane("GUI_Criterion.fxml");
+            infoArea.setText("");
             TextArea nameArea = (TextArea) scene.lookup("#criterionName");
             nameArea.setText(criterion.getName());
             TextArea parentArea = (TextArea) scene.lookup("#criterionParent");
@@ -227,6 +231,7 @@ public class Controller {
         }
         loadFxmlToMainPane("GUI_AddCriterion.fxml");
         ((TextField)scene.lookup("#parentNameField")).setText(parentName);
+        infoArea.setText("Add a subcriterion");
     }
 
     public void setPathToXml(ActionEvent event){
@@ -255,6 +260,7 @@ public class Controller {
         String name = ((TextArea)(((Node)event.getSource()).getScene().lookup("#criterionName"))).getText();
         Criterion current = Criterion.findCriterionInListByName(new ArrayList<>(criteriaMap.values()),name);
         setSceneAndMainPane(((Node) event.getSource()).getScene());
+        infoArea.setText("");
         if(!allCriteriaAdded){
             infoArea.setText("Finish adding all criteria");
             return;
@@ -306,6 +312,7 @@ public class Controller {
     public void acceptSpecifyWeightsButton(ActionEvent event){
         setSceneAndMainPane(((Node) event.getSource()).getScene());
         String name = ((TextArea)scene.lookup("#criterionName")).getText();
+        infoArea.setText("");
         Criterion current = Criterion.findCriterionInListByName(currentSiblings, name);
         ScrollPane scrollPane = (ScrollPane)scene.lookup("#scrollPane");
         HBox hBox = (HBox) scrollPane.getContent();
@@ -316,16 +323,25 @@ public class Controller {
             if(sc.getName().equals(name))
                 continue;
             Weight weight = new Weight();
-            weight.setTo(((Label)nameBox.getChildren().get(i)).getText());
+            String to = ((Label)nameBox.getChildren().get(i)).getText();
+            weight.setTo(to);
             weight.setValue(Double.parseDouble(((TextField)valueBox.getChildren().get(i)).getText()));
-            if(!Criterion.hasGivenWeight(current, weight))
-                current.addWeight(weight);
+//            if(!Criterion.hasGivenWeight(current, weight))
+//                current.addWeight(weight);
+            if (Criterion.hasGivenWeightTo(current, weight)){
+                Criterion.deleteWeight(current,weight);
+            }
+            current.addWeight(weight);
             Weight oppositeWeight = new Weight();
             oppositeWeight.setValue(1d/Double.parseDouble(((TextField)valueBox.getChildren().get(i)).getText()));
             oppositeWeight.setTo(current.getName());
             Criterion opposite = Criterion.findCriterionInListByName(currentSiblings, sc.getName());
-            if(!Criterion.hasGivenWeight(opposite, oppositeWeight))
-                opposite.addWeight(oppositeWeight);
+            if (Criterion.hasGivenWeightTo(opposite, oppositeWeight)){
+                Criterion.deleteWeight(sc, oppositeWeight);
+            }
+            opposite.addWeight(oppositeWeight);
+//            if(!Criterion.hasGivenWeight(opposite, oppositeWeight))
+//                opposite.addWeight(oppositeWeight);
             i++;
         }
         infoArea.setText("Choice accepted");
@@ -333,13 +349,32 @@ public class Controller {
 
     public void applyWeights(ActionEvent event) throws Exception{
         setSceneAndMainPane(((Node) event.getSource()).getScene());
+        infoArea.setText("");
+        if(!allCriteriaAdded){
+            infoArea.setText("Add all criteria first");
+            return;
+        }
+        if(currentSiblings == null){
+            infoArea.setText("Weights not specified");
+            return;
+        }
+        for(Criterion sc : currentSiblings){
+            if(sc.getWeightsList().size() != currentSiblings.size()-1) {
+                infoArea.setText("Not enough weights specified");
+                return;
+            }
+        }
+        finalList.removeAll(currentSiblings);
         MyMatrix myMatrix = MyMatrix.createWeightMatrixFromSiblingCriteria(currentSiblings);
         Matrix matrix = myMatrix.toMatrix();
         try{
             Double ratio = Consistency.calculateConsistencyRatio(matrix);
             if(ratio > cr){
-                infoArea.setText("Consistency ratio is " + ratio + " which is greater than acceptable " + ratio +
+                infoArea.setText("Consistency ratio is " + ratio + " which is greater than acceptable " + cr +
                         "\nTry again");
+                for(Criterion sc : currentSiblings){
+                    sc.setWeightsList(new ArrayList<>());
+                }
             }
             else{
                 finalList.addAll(currentSiblings);
@@ -355,6 +390,7 @@ public class Controller {
 
     public void specifyPrioritiesButton(ActionEvent event)throws IOException{
         setSceneAndMainPane(((Node) event.getSource()).getScene());
+        infoArea.setText("");
         if(!allAlternativesAdded){
             infoArea.setText("Finish adding alternatives");
             return;
@@ -419,6 +455,7 @@ public class Controller {
         String name = ((TextArea)scene.lookup("#criterionName")).getText();
         Criterion current = Criterion.findCriterionInListByName(new ArrayList<>(criteriaMap.values()), name);
         // PATRZ METODA specifyPrioritiesButton
+        current.setAlternativesList(new ArrayList<>());
         ScrollPane scrollPane = (ScrollPane)scene.lookup("#scrollPane");
         HBox hBox = (HBox) scrollPane.getContent();
         VBox baseBox = (VBox)hBox.getChildren().get(0);
@@ -430,7 +467,7 @@ public class Controller {
             Weight baseWeight = new Weight();
             baseWeight.setTo(((Label) toBox.getChildren().get(i)).getText());
             baseWeight.setValue(Double.parseDouble(((TextField) valueBox.getChildren().get(i)).getText()));
-            if(current.findAlternativeByName(baseAlt.getName()) == null) {
+            if(!current.hasAlternativeByName(baseAlt.getName())) {
                 baseAlt.addPriority(baseWeight);
                 current.addAlternative(baseAlt);
             }
@@ -443,7 +480,7 @@ public class Controller {
             toAlt.setName(((Label)toBox.getChildren().get(i)).getText());
             Weight toWeight = new Weight();
             toWeight.setTo(((Label) baseBox.getChildren().get(i)).getText());
-            toWeight.setValue(Double.parseDouble(((TextField) valueBox.getChildren().get(i)).getText()));
+            toWeight.setValue(1d/Double.parseDouble(((TextField) valueBox.getChildren().get(i)).getText()));
             if(current.findAlternativeByName(toAlt.getName()) == null) {
                 toAlt.addPriority(toWeight);
                 current.addAlternative(toAlt);
@@ -458,7 +495,7 @@ public class Controller {
         try{
             Double ratio = Consistency.calculateConsistencyRatio(matrix);
             if(ratio > cr){
-                infoArea.setText("Consistency ratio is " + ratio + " which is greater than acceptable " + ratio +
+                infoArea.setText("Consistency ratio is " + ratio + " which is greater than acceptable " + cr +
                         "\nTry again");
                 current.getAlternativesList().clear();
                 return;

@@ -8,11 +8,13 @@ public class Consistency {
         int dim = matrix.getColumnDimension();
         if(dim != matrix.getRowDimension())
             throw new Exception("Matrix not square!");
-        if(dim < 3)
-            throw new Exception("Matrix dimension lower than 3!");
+        if(dim < 1)
+            throw new Exception("Matrix dimension lower than 1!");
+        if(dim == 1 || dim == 2)
+            return 0d;
         if(dim > 10)
             throw new Exception("Matrix dimension bigger than 10!");
-        double[] randomIndex = {1d,1d,1d,0.5247,0.8816,1.1086,1.2479,1.3417,1.4057,1.4499,1.4854};
+        double[] randomIndex = {0d,0d,0d,0.5247,0.8816,1.1086,1.2479,1.3417,1.4057,1.4499,1.4854};
         double[] eigenvalues = getDiag(matrix.eig().getD());
         double maxEigenvalue = maxFromArray(eigenvalues);
         double result = (maxEigenvalue-dim)/(dim-1)/randomIndex[dim];

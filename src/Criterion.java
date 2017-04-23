@@ -21,6 +21,14 @@ public class Criterion {
         return null;
     }
 
+    public boolean hasAlternativeByName(String name){
+        for(Alternative a : alternativesList){
+            if(a.getName().equals(name))
+                return true;
+        }
+        return false;
+    }
+
     public Double findWeightValueToByName(String to){
         for(Weight w : weightsList){
             if (w.getTo().equals(to))
@@ -149,5 +157,29 @@ public class Criterion {
                 result = true;
         }
         return result;
+    }
+
+    public static boolean hasGivenWeightTo(Criterion criterion, Weight weight){
+        boolean result = false;
+        for(Weight w : criterion.getWeightsList()){
+            if(w.getTo().equals(weight.getTo()))
+                result = true;
+        }
+        return result;
+    }
+
+    public static Weight findWeightByTo(Criterion criterion, String to){
+        for(Weight w : criterion.getWeightsList()){
+            if(w.getTo().equals(to))
+                return w;
+        }
+        return null;
+    }
+
+    public static void deleteWeight(Criterion criterion, Weight weight){
+        for(int i=0; i<criterion.getWeightsList().size(); i++){
+            if(criterion.getWeightsList().get(i).getTo().equals(weight.getTo()))
+                criterion.getWeightsList().remove(i);
+        }
     }
 }
